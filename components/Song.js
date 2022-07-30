@@ -17,7 +17,22 @@ const Song = ({ order, track }) => {
       .play({
         uris: [track?.track?.uri],
       })
-      .catch((err) => {});
+      .catch((err) => {
+        getDeviceId();
+      });
+  };
+
+  const getDeviceId = () => {
+    spotifyApi.getMyDevices().then((res) => {
+      const deviceId = res?.body?.devices?.[0]?.id;
+
+      if (deviceId) {
+        spotifyApi.play({
+          uris: [track?.track?.uri],
+          device_id: deviceId,
+        });
+      }
+    });
   };
 
   return (
