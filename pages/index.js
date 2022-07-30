@@ -1,6 +1,8 @@
 import { getToken } from "next-auth/jwt";
 import Sidebar from "../components/Sidebar";
 import Center from "../components/Center";
+import { getSession } from "next-auth/react";
+import Player from "../components/Player";
 
 const Home = () => {
   return (
@@ -10,15 +12,19 @@ const Home = () => {
         <Center />
       </main>
 
-      <div>{/* Player */}</div>
+      <div className="sticky bottom-0">
+        <Player />
+      </div>
     </div>
   );
 };
 
 export default Home;
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps(context) {
+  const { req } = context;
   const token = await getToken({ req, secret: process.env.JWT_SECRET });
+  const session = await getSession(context);
 
   if (!token && req.url !== "/login") {
     return {
@@ -30,6 +36,8 @@ export async function getServerSideProps({ req }) {
   }
 
   return {
-    props: {}, // will be passed to the page component as props
+    props: {
+      session,
+    }, // will be passed to the page component as props
   };
 }
